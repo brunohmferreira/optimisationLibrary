@@ -16,8 +16,8 @@
 #include "ModelKnapsackProblem.h"
 #include "DataAssignmentProblem.h"
 #include "ModelAssignmentProblem.h"
-#include "DataConcreteMixerTruckRouting.h"
-#include "ModelConcreteMixerTruckRouting.h"
+#include "DataVehicleRouting.h"
+#include "ModelVehicleRouting.h"
 
 Execute::Execute() {
     totalTime = 0;
@@ -46,9 +46,9 @@ void Execute::execute() {
     } else if (Options::getInstance()->getStringOption("model").compare("assignmentProblem") == 0) {
         data  = new DataAssignmentProblem();
         model = new ModelAssignmentProblem();
-    } else if (Options::getInstance()->getStringOption("model").compare("concreteMixerTruckRouting") == 0) {
-        data  = new DataConcreteMixerTruckRouting();
-        model = new ModelConcreteMixerTruckRouting();
+    } else if (Options::getInstance()->getStringOption("model").compare("vehicleRouting") == 0) {
+        data  = new DataVehicleRouting();
+        model = new ModelVehicleRouting();
     } else {
         data  = new Data();
         model = new Model();

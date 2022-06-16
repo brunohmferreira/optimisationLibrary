@@ -1,0 +1,26 @@
+number of clients
+4
+
+vehicle fleet
+1
+
+fixed cost of using the vehicle
+10
+
+vehicle capacity
+8
+
+demands
+0 0
+1 1
+2 1
+3 1
+4 1
+
+distances
+0	2	4	8	10
+12	0	16	18	22
+30	2	25	33	41
+30	32	37	0	50
+35	37	43	53	0
+

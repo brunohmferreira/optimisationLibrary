@@ -1,11 +1,11 @@
 
-#ifndef MODELCONCRETEMIXERTRUCKROUTING_H
-#define MODELCONCRETEMIXERTRUCKROUTING_H
+#ifndef MODELVEHICLEROUTING_H
+#define MODELVEHICLEROUTING_H
 
 #include "Model.h"
 #include "Solution.h"
 
-class ModelConcreteMixerTruckRouting : public Model {
+class ModelVehicleRouting : public Model {
 
     private:
     
@@ -31,9 +31,9 @@ class ModelConcreteMixerTruckRouting : public Model {
         
     public:
         
-        ModelConcreteMixerTruckRouting();
+        ModelVehicleRouting();
 
-        virtual ~ModelConcreteMixerTruckRouting();
+        virtual ~ModelVehicleRouting();
 
         virtual void execute(const Data *data);
 

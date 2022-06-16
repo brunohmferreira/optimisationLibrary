@@ -61,7 +61,7 @@ void Options::assignDefaultValues() {
     modelValues.push_back("motivating");
     modelValues.push_back("knapsackProblem");
     modelValues.push_back("assignmentProblem");
-    modelValues.push_back("concreteMixerTruckRouting");
+    modelValues.push_back("vehicleRouting");
     vector<string> empty;
    
     //double dmax = std::numeric_limits<double>::max();
@@ -81,7 +81,7 @@ void Options::assignDefaultValues() {
     options.push_back(new StringOption("input",  "Input file", 1, "", empty));
     options.push_back(new StringOption("output", "Output file where solution will be written", 1, "", empty));
     
-    options.push_back(new StringOption("model",  "Which model to solve", 1, "concreteMixerTruckRouting", modelValues));
+    options.push_back(new StringOption("model",  "Which model to solve", 1, "vehicleRouting", modelValues));
     
     // Solver options 
     options.push_back(new StringOption("solver",             "Choose which solver to use [Default: cplex)", 1, "cplex", solverValues));

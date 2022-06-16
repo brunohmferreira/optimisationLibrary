@@ -1,19 +1,19 @@
 
-#include "ModelConcreteMixerTruckRouting.h"
+#include "ModelVehicleRouting.h"
 #include "Options.h"
-#include "DataConcreteMixerTruckRouting.h"
+#include "DataVehicleRouting.h"
 
-ModelConcreteMixerTruckRouting::ModelConcreteMixerTruckRouting() : Model(){
+ModelVehicleRouting::ModelVehicleRouting() : Model(){
     V = 0;
     K = 0;
     x = "x";
     y = "y";
 }
 
-ModelConcreteMixerTruckRouting::~ModelConcreteMixerTruckRouting() {
+ModelVehicleRouting::~ModelVehicleRouting() {
 }
 
-void ModelConcreteMixerTruckRouting::execute(const Data* data) {
+void ModelVehicleRouting::execute(const Data* data) {
 
     float startTime = Util::getTime();
 
@@ -33,7 +33,7 @@ void ModelConcreteMixerTruckRouting::execute(const Data* data) {
     printSolutionVariables();
 } 
 
-void ModelConcreteMixerTruckRouting::printSolutionVariables(int digits, int decimals) {
+void ModelVehicleRouting::printSolutionVariables(int digits, int decimals) {
     if (debug) {
         if (solver->solutionExists() && !solver->isInfeasible() && !solver->isUnbounded()) {
             vector<string> route;
@@ -43,7 +43,7 @@ void ModelConcreteMixerTruckRouting::printSolutionVariables(int digits, int deci
                 route.resize(V);
                 std::fill(route.begin(), route.end(), "");
                 indexRoute = 0;
-                printf("Concrete Mixer Truck %d \n", k);
+                printf("Vehicle %d \n", k);
                 for (int j = 0; j < V; j++) {
                     printf("\t Xi%d", j);
                 }
@@ -65,7 +65,7 @@ void ModelConcreteMixerTruckRouting::printSolutionVariables(int digits, int deci
                     printf("\n");
                 }
                 printf("\n");
-                printf("Route (Concrete Mixer Truck %d): ", k);
+                printf("Route (Vehicle %d): ", k);
                 for (int i = 0; i < V; i++) {
                     printf("%s", route[i].c_str());
                 }
@@ -80,12 +80,12 @@ void ModelConcreteMixerTruckRouting::printSolutionVariables(int digits, int deci
 
 }
 
-void ModelConcreteMixerTruckRouting::reserveSolutionSpace(const Data* data) {
+void ModelVehicleRouting::reserveSolutionSpace(const Data* data) {
     sol_x.resize(K,vector<vector<double>>(V, vector<double>(V)));
     sol_y.resize(K);
 }
 
-void ModelConcreteMixerTruckRouting::readSolution(const Data* data) {
+void ModelVehicleRouting::readSolution(const Data* data) {
     totalNodes = solver->getNodeCount();
     solution->resetSolution();
     solution->setSolutionStatus(solver->solutionExists(), solver->isOptimal(),  solver->isInfeasible(), solver->isUnbounded());
@@ -113,11 +113,11 @@ void ModelConcreteMixerTruckRouting::readSolution(const Data* data) {
 }
 
 
-void ModelConcreteMixerTruckRouting::createModel(const Data* data) {
+void ModelVehicleRouting::createModel(const Data* data) {
     
-    const DataConcreteMixerTruckRouting* dataCMR = dynamic_cast<const DataConcreteMixerTruckRouting*>(data);
-    V = (dataCMR->getNumberOfConstructions()) + 1;
-    K = dataCMR->getConcreteMixerTruckFleet();
+    const DataVehicleRouting* dataCMR = dynamic_cast<const DataVehicleRouting*>(data);
+    V = (dataCMR->getNumberOfClients()) + 1;
+    K = dataCMR->getVehicleFleet();
     solver->changeObjectiveSense(0);
 
     // x variable
@@ -140,7 +140,7 @@ void ModelConcreteMixerTruckRouting::createModel(const Data* data) {
 
     int indexAux;
     
-    // at least one concrete mixer truck attends a client (1b and 1c)
+    // at least one vehicle attends a client (1b and 1c)
     colNames.resize(K * V - K);
     elements.resize(K * V - K);
     for (int j = 1; j < V; j++) {
@@ -154,7 +154,7 @@ void ModelConcreteMixerTruckRouting::createModel(const Data* data) {
                 }
             }
         }
-        solver->addRow(colNames, elements, 1, 'G', "constraint1b_" + lex(j));
+        solver->addRow(colNames, elements, 1, 'E', "constraint1b_" + lex(j));
     }
 
     colNames.resize(K * V - K);
@@ -170,7 +170,7 @@ void ModelConcreteMixerTruckRouting::createModel(const Data* data) {
                 }
             }
         }
-        solver->addRow(colNames, elements, 1, 'G', "constraint1c_" + lex(i));
+        solver->addRow(colNames, elements, 1, 'E', "constraint1c_" + lex(i));
     }
 
     // relationship between x and y (1d)
@@ -201,9 +201,6 @@ void ModelConcreteMixerTruckRouting::createModel(const Data* data) {
             colNames[indexAux] = x + lex(k-1) + UND + '0' + UND + lex(j);
             elements[indexAux] = 1;
             indexAux++;
-        }
-
-        for (int j = 1; j < V; j++) {
             colNames[indexAux] = x + lex(k) + UND + '0' + UND + lex(j);
             elements[indexAux] = -1;
             indexAux++;
@@ -249,38 +246,21 @@ void ModelConcreteMixerTruckRouting::createModel(const Data* data) {
             for (int i = 0; i < V; i++) {
                 if (i != j) {
                     colNames[indexAux] = x + lex(k) + UND + lex(i) + UND + lex(j);
-                    elements[indexAux] = dataCMR->getDemand(j).getQuantity(dataCMR->getDemand(j).constructionId);
+                    elements[indexAux] = dataCMR->getDemand(j).getQuantity(dataCMR->getDemand(j).clientId);
                     indexAux++;
                 }
             }
         }
 
-        solver->addRow(colNames, elements, dataCMR->getConcreteMixerTruckCapacity(), 'L', "constraint1h_" + lex(k));
-    }
-
-    // concrete type constraint (1j) 
-    colNames.resize(1);
-    elements.resize(1);
-    for (int k = 0; k < K; k++) {
-        for (int i = 1; i < V; i++) {
-            for (int j = 1; j < V; j++) {
-                if (i != j && dataCMR->getDemand(i).getConcreteTypeId(dataCMR->getDemand(i).constructionId) != dataCMR->getDemand(j).getConcreteTypeId(dataCMR->getDemand(j).constructionId)) {
-                    colNames[0] = x + lex(k) + UND + lex(i) + UND + lex(j);
-                    elements[0] = 1;
-                    solver->addRow(colNames, elements, 0, 'E', "constraint1j_" + lex(k) + UND + lex(i) + UND + lex(j));
-                }
-            }
-        }
+        solver->addRow(colNames, elements, dataCMR->getVehicleCapacity(), 'L', "constraint1h_" + lex(k));
     }
 }
 
-void ModelConcreteMixerTruckRouting::assignWarmStart(const Data* data) {
-   
-}
+void ModelVehicleRouting::assignWarmStart(const Data* data) { }
 
 // Cutting planes
 
-vector<SolverCut> ModelConcreteMixerTruckRouting::separationAlgorithm(vector<double> sol) {
+vector<SolverCut> ModelVehicleRouting::separationAlgorithm(vector<double> sol) {
     vector<SolverCut> cuts;
     bool routeIsConnected;
 
@@ -313,7 +293,7 @@ vector<SolverCut> ModelConcreteMixerTruckRouting::separationAlgorithm(vector<dou
     return cuts;
 }
 
-void ModelConcreteMixerTruckRouting::traverseGraph(int vehicleId, int vertex, vector<bool> visited) {
+void ModelVehicleRouting::traverseGraph(int vehicleId, int vertex, vector<bool> visited) {
     visited[vertex] = true; //mark as visited
     for (int v = 0; v < V; v++) {
         if (sol_x[vehicleId][vertex][v] == 1) {
@@ -323,7 +303,7 @@ void ModelConcreteMixerTruckRouting::traverseGraph(int vehicleId, int vertex, ve
     }
 }
 
-bool ModelConcreteMixerTruckRouting::graphIsConnected(int vehicleIndex) { // passar alreadyVisited como parametro
+bool ModelVehicleRouting::graphIsConnected(int vehicleIndex) { // passar alreadyVisited como parametro
     vector<bool> alreadyVisited;
     alreadyVisited.resize(V);
     //for all vertex as start point, check whether all nodes are visible or not
