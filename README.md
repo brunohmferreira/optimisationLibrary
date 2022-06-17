@@ -75,7 +75,7 @@ cmake ..
 ~/build/bin/Release/
 ```
 
-9. If the cmake's log shows some error, configure it in the visual studio:
+9. If the cmake's log shows some error, configure it in the Visual Studio:
 * Go to *Build -> Configuration Manager* and in *Active soluction platform* select *<New...>*.
 * Fill:
 ```sh
@@ -194,6 +194,38 @@ The following steps must be followed:
 4. Open optlib debug properties. In *Debugging*, fill *Command Arguments* with the options you want to send by parameters and click *Ok*.
 
 5. Click in *Local Windows Debugger*.
+
+6. If it doesn't work, configure the solution in the Visual Studio:
+* Go to *Build -> Configuration Manager*.
+* Select *x64* as the active solution and select *optlib* and *ZERO_CHECK*
+* Click *Close*
+* Right click in the project *optlib*, then *Properties*
+* Go to Configuration Properties -> C/C++ -> General -> Additional Include Directories and add:
+```sh
+C:\Program Files\IBM\ILOG\CPLEX_Studio<version>\cplex\include
+C:\Program Files\IBM\ILOG\CPLEX_Studio<version>\concert\include
+```
+> **WARNING**: <version> is the CPLEX Studio version
+
+* Go to Configuration Properties -> Linker -> Input -> Additional Dependencies and add:
+```sh
+C:\Program Files\IBM\ILOG\CPLEX_Studio<version>\cplex\lib\x64_windows_msvc14\stat_mda\cplex<version>.lib
+C:\Program Files\IBM\ILOG\CPLEX_Studio<version>\cplex\lib\x64_windows_msvc14\stat_mda\ilocplex.lib
+C:\Program Files\IBM\ILOG\CPLEX_Studio<version>\concert\lib\x64_windows_msvc14\stat_mda\concert.lib
+```
+> **WARNING**: <version> is the CPLEX Studio version
+
+* Go to Configuration Properties -> C/C++ -> Preprocessor -> Preprocessor Definitions and add:
+```sh
+WIN32
+_CONSOLE
+IL_STD
+_CRT_SECURE_NO_WARNINGS
+```
+
+* Click *Apply* and *Ok*
+
+6. Click in *Local Windows Debugger*.
 
 
 ### TODO list
