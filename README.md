@@ -225,7 +225,7 @@ _CRT_SECURE_NO_WARNINGS
 
 * Click *Apply* and *Ok*
 
-6. Click in *Local Windows Debugger*.
+7. Click in *Local Windows Debugger*.
 
 
 ### TODO list
