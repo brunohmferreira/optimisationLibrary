@@ -115,6 +115,10 @@ _CRT_SECURE_NO_WARNINGS
 ```sh
 bin/Release/optlib.exe {options}
 ```
+Or
+```sh
+bin/x64/optlib.exe {options}
+```
 
 *Options*
 * settings_file: Input file with options. If not empty, only some other options such as 'output' or 'debug' are allowed [Default: ""].
