@@ -117,7 +117,7 @@ bin/Release/optlib.exe {options}
 ```
 Or
 ```sh
-bin/x64/optlib.exe {options}
+x64/Release/optlib.exe {options}
 ```
 
 *Options*
