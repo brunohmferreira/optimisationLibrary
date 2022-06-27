@@ -96,9 +96,9 @@ This is the abstraction of the [DataCapitalBudgeting class](#datacapitalbudgetin
   * int getInitialInvestment(int i): gets the initial investment.
   * int getFutureValue(int i): gets the future value of the variable. 
 
-#### DataConcreteMixerTruckRouting.h
+#### DataVehicleRouting.h
 
-This is the abstraction of the [DataConcreteMixerTruckRouting class](#dataconcretemixertruckrouting.cc).
+This is the abstraction of the [DataVehicleRouting class](#datavehiclerouting.cc).
 
 * Dependencies
   * [Util.h](#util.h)
@@ -114,8 +114,8 @@ This is the abstraction of the [DataConcreteMixerTruckRouting class](#dataconcre
   * vector<vector<double>> distances: the distances between constructions matrix 
 
 * Public functions
-  * DataConcreteMixerTruckRouting(): constructor
-  * ~DataConcreteMixerTruckRouting(): destructor
+  * DataVehicleRouting(): constructor
+  * ~DataVehicleRouting(): destructor
   * void readData(): sets the data and parameters of the optimization problem
   * void print(): prints the data of the optimization problem
   * int getNumberOfConstructions(): gets the number of constructions
@@ -364,9 +364,9 @@ This is the abstraction of the [ModelCapitalBudgeting class](#modelcapitalbudget
   * ~ModelCapitalBudgeting(): destructor
   * void execute(const Data *data): executes the process of solving the Capital Budgeting problem
 
-#### ModelConcreteMixerTruckRouting.h
+#### ModelVehicleRouting.h
 
-This is the abstraction of the [ModelConcreteMixerTruckRouting class](#modelconcretemixertruckrouting.cc).
+This is the abstraction of the [ModelVehicleRouting class](#modelvehiclerouting.cc).
 
 * Dependencies
   * [Model.h](#model.h)
@@ -386,13 +386,14 @@ This is the abstraction of the [ModelConcreteMixerTruckRouting class](#modelconc
   * void assignWarmStart(const Data* data)
   * void createModel(const Data* data): creates a model formatted to the solver based on the data 
   * void printSolutionVariables(int digits = 5, int decimals = 2): prints the value of the variables in the solution
-  * bool checkIfThereIsAnySubtourInTheSolution(): defines if the system needs to retry to solve the problem because of the existance of a subtour.
   * vector<SolverCut> separationAlgorithm(vector<double> sol): creates the cutting planes
-  * void traverse(int k, int i, vector<bool> visited) and bool isConnected(int vehicleIndex): analyzes if the graph is connected.
+  * void connectivityCuts(const vector<double> &sol, vector<SolverCut> &cuts): analyzes the connectivity of the graph
+  * int disconnectedComponents(const vector<vector<int>> &graph, const vector<vector<double>> &distance, vector<vector<int>> &components): identifies the vertexes that are disconnected from the graph
+  * int isConnected(const vector<vector<int>> &graph, const vector<vector<double>> &distance, vector<int> &notConnected): verifies if the graph is connected
 
 * Public functions
-  * ModelConcreteMixerTruckRouting(): constructor
-  * ~ModelConcreteMixerTruckRouting(): destructor
+  * ModelVehicleRouting(): constructor
+  * ~ModelVehicleRouting(): destructor
   * void execute(const Data *data): executes the process of solving the Concrete Mixer Truck Routing Problem
 
 #### ModelKnapsackProblem.h
@@ -751,21 +752,21 @@ This class is responsible to create and manage a data object for the Capital Bud
   * Returns:
     * The future value of a variable
 
-#### DataConcreteMixerTruckRouting.cc
+#### DataVehicleRouting.cc
 
 This class is responsible to create and manage a data object for the Concrete Mixer Truck Routing problem.
 
 * Dependencies
-  * [DataConcreteMixerTruckRouting.h](#dataconcretemixertruckrouting.h)
+  * [DataVehicleRouting.h](#datavehiclerouting.h)
   * [Options.h](#options.h)
 
-* DataConcreteMixerTruckRouting()
+* DataVehicleRouting()
   * Constructor
   * Actions:
     * Sets numberOfConstructions to 0 (zero)
     * Sets concreteMixerTruckFleet to 0 (zero)
     * Sets numberOfTypesOfConcrete to 0 (zero)
-* ~DataConcreteMixerTruckRouting() 
+* ~DataVehicleRouting() 
   * Destructor
 * void readData()
   * Actions:
@@ -1193,14 +1194,14 @@ This class is responsible to create and manage a model object for the Capital Bu
     * Calls the function [getTime()](#util.h) and calculate the total time
     * Calls the function printSolutionVariables()
 
-#### ModelConcreteMixerTruckRouting.cc
+#### ModelVehicleRouting.cc
 
 This class is responsible to create and manage a model object for the Concrete Mixer Truck Routing problem.
 
 * Dependencies
-  * [ModelConcreteMixerTruckRouting.h](#modelconcretemixertruckrouting.h)
+  * [ModelVehicleRouting.h](#modelvehiclerouting.h)
   * [Options.h](#options.h)
-  * [DataConcreteMixerTruckRouting.h](#dataconcretemixertruckrouting.h)
+  * [DataVehicleRouting.h](#datavehiclerouting.h)
   
 * void reserveSolutionSpace(const Data* data)
   * Parameters:
@@ -1221,9 +1222,9 @@ This class is responsible to create and manage a model object for the Concrete M
   * Parameters:
     * data: the object with the parameters of the Concrete Mixer Truck Routing problem.
   * Actions:
-    * Creates a [DataConcreteMixerTruckRouting](#dataconcretemixertruckrouting.h) instance
-    * Calls the function [getNumberOfConstructions](#dataconcretemixertruckrouting.h)
-    * Calls the function [getConcreteMixerTruckFleet](#dataconcretemixertruckrouting.h)
+    * Creates a [DataVehicleRouting](#datavehiclerouting.h) instance
+    * Calls the function [getNumberOfConstructions](#datavehiclerouting.h)
+    * Calls the function [getConcreteMixerTruckFleet](#datavehiclerouting.h)
     * Calls the function [changeObjectiveSense()](#solver.h)
     * Sends the decision variables x and y to the solver calling [addBinaryVariable()](#solver.h)
     * Sends the constraints to the solver
@@ -1233,32 +1234,41 @@ This class is responsible to create and manage a model object for the Concrete M
     * decimals: maximum number of decimal places of the value of the solution
   * Actions:
     * Prints the value of each decision variable of the solution, if the *debug* option is activated
-* bool checkIfThereIsAnySubtourInTheSolution()
-  * Actions: 
-    * Verifies if the solution exists, if it is feasible and if it is unbounded
-    * for each concrete mixer truck, defines if it is leaving the depot and if it is arriving the depot, to understand if there is any subtour
-    * If there is a subtour, adds a constraint that doesn't allow this to happen
-  * Returns:
-    * If the system needs to retry to solve the problem  
 * vector<SolverCut> separationAlgorithm(vector<double> sol)
   * Actions:
-    * Verifies if the solution is integer
-    * Verifies if the graph of each concrete mixer truck is connected
-    * Creates the cuts
+    * Creates an object of SolverCut type
+    * Calls the function connectivityCuts
   * Returns:
     * The list of cuts
-* void traverse(int k, int i, vector<bool> visited) and bool isConnected(int vehicleIndex)
+* void connectivityCuts(const vector<double> &sol, vector<SolverCut> &cuts)
+  * Actions:
+    * Creates a subgraph containing only visited vertices and visited edges
+    * Check if cut is connected
+    * Verifies the connectivity of the graph
+    * Creates the cutting planes
+* int isConnected(const vector<vector<int>> &graph, const vector<vector<double>> &distance, vector<int> &notConnected)
+  * Actions: 
+    * Creates a vector of visited vertexes
+    * Finds the disconnected vertexes
+    * Creates a list of disconnected vertexes
   * Returns:
-    * If the graph is connected
+    * If the quantity of disconnected vertexes is equal 0
+* int disconnectedComponents(const vector<vector<int>> &graph, const vector<vector<double>> &distance, vector<vector<int>> &components)
+  * Actions:
+    * Checks the vertices that have not yet been analyzed
+    * Creates a vector of visited vertexes
+    * Finds the list of disconnected vertexes
+  * Returns:
+    * the list of disconnected vertexes
 
-* ModelConcreteMixerTruckRouting()
+* ModelVehicleRouting()
   * Constructor
   * Actions:
     * Sets V to 0 (zero)
     * Sets K to 0 (zero)
     * Sets x to "x" 
     * Sets y to "y" 
-* ~ModelConcreteMixerTruckRouting()
+* ~ModelVehicleRouting()
   * Destructor
 * void execute(const Data *data)
   * Parameters:
