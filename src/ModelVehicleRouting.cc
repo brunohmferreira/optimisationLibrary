@@ -337,7 +337,6 @@ void ModelVehicleRouting::connectivityCuts(const vector<double> &sol, vector<Sol
 
         // Check if cut is connected
         tempTime = Util::getWallTime();
-        int disconnectedCuts = 2;
 
         if (!addCuts) {
             // verificação se o novo grafo possui o índice zero, ou seja, se passa pelo depósito
@@ -349,10 +348,10 @@ void ModelVehicleRouting::connectivityCuts(const vector<double> &sol, vector<Sol
                 }
             }
             // verificação se o novo grafo é conectado
-            else if (disconnectedCuts == 0 || disconnectedCuts == 2) {
+            else {
                 // retorna listas de vertices que não estão conectados ao primeiro grupo de vertices
                 addCuts = !isConnected(graph_red, sol_x_red, verticesInCut[0]);
-                if (addCuts && disconnectedCuts == 2) {
+                if (addCuts) {
                     vector<vector<int>> verticesInCut2;
                     // retorna listas de vertices que não foram visitados partindo do 0
                     addCuts = disconnectedComponents(graph_red, sol_x_red, verticesInCut2);
@@ -361,9 +360,7 @@ void ModelVehicleRouting::connectivityCuts(const vector<double> &sol, vector<Sol
                         for (unsigned k = 1; k < verticesInCut.size(); k++) verticesInCut[k] = verticesInCut2[k-1];
                     }
                 }
-            } else {
-                addCuts = disconnectedComponents(graph_red, sol_x_red, verticesInCut);
-            } 
+            }
         }
 
         if (addCuts) {
