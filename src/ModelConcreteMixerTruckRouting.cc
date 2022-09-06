@@ -90,6 +90,39 @@ void ModelConcreteMixerTruckRouting::printSolutionVariables(int digits, int deci
 
 }
 
+ModelResponseObject ModelConcreteMixerTruckRouting::reportSolutionVariables(int digits, int decimals) {
+    ModelResponseObject* response = new ModelResponseObject();
+
+    if (solver->solutionExists() && !solver->isInfeasible() && !solver->isUnbounded()) {
+
+        response->sol_y.resize(K);
+        response->sol_z.resize(K, vector<double>(V));
+        response->sol_x.resize(K, vector<vector<double>>(V, vector<double>(V)));
+
+        for (int k = 0; k < K; k++) {
+            if (round(sol_y[k]) == -0)
+                response->sol_y[k] = 0;
+            else
+                response->sol_y[k] = round(sol_y[k]);
+
+            for (int j = 1; j < V; j++) {
+                response->sol_z[k][j] = sol_z[k][j];
+            }
+
+            for (int i = 0; i < V; i++) {
+                for (int j = 0; j < V; j++) {
+                    if (i == j || round(sol_x[k][i][j]) == -0)
+                        response->sol_x[k][i][j] = 0;
+                    else
+                        response->sol_x[k][i][j] = round(sol_x[k][i][j]);
+                }
+            }
+        }
+    }
+
+    return *response;
+}
+
 void ModelConcreteMixerTruckRouting::reserveSolutionSpace(const Data* data) {
     sol_x.resize(K,vector<vector<double>>(V, vector<double>(V)));
     sol_y.resize(K);

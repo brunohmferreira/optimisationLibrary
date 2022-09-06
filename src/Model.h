@@ -16,6 +16,18 @@
 /**
  * Model, superclass of ssd, etc.
  */
+
+class ModelResponseObject {
+
+public:
+
+    ModelResponseObject() {}
+    ~ModelResponseObject() {}
+
+    vector<vector<vector<double>>> sol_x;
+    vector<double> sol_y;
+    vector<vector<double>> sol_z;
+};
 class Model {
 
     protected:
@@ -97,6 +109,8 @@ class Model {
 
         Solution* getSolution()  { return solution;  }
         void printSolution()     { solution->print(); }
+        SoltuionResponseObject reportSolution() { return solution->report(); }
+        virtual ModelResponseObject reportSolutionVariables(int digits = 5, int decimals = 2) { return ModelResponseObject(); }
 
 
         virtual vector<SolverCut> separationAlgorithm(vector<double> sol) {

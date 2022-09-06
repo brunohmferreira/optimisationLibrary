@@ -63,6 +63,10 @@ void Options::assignDefaultValues() {
     modelValues.push_back("assignmentProblem");
     modelValues.push_back("concreteMixerTruckRouting");
     vector<string> empty;
+
+    vector<string> dataTypeValues;
+    dataTypeValues.push_back("object");
+    dataTypeValues.push_back("file");
    
     //double dmax = std::numeric_limits<double>::max();
     double imax = std::numeric_limits<int>::max();
@@ -82,6 +86,7 @@ void Options::assignDefaultValues() {
     options.push_back(new StringOption("output", "Output file where solution will be written", 1, "", empty));
     
     options.push_back(new StringOption("model",  "Which model to solve", 1, "concreteMixerTruckRouting", modelValues));
+    options.push_back(new StringOption("data_type",  "Which data type will be received", 1, "object", dataTypeValues));
     
     // Solver options 
     options.push_back(new StringOption("solver",             "Choose which solver to use [Default: cplex)", 1, "cplex", solverValues));
@@ -379,7 +384,7 @@ string Options::getAllOptionsAsText() {
     string ret = "";
     for (int i = 0; i < (int)options.size(); i++) {
         char buffer[8000];
-        sprintf(buffer, "%s: %s\n", options[i]->getName().c_str(), options[i]->getValueAsString().c_str());
+        sprintf_s(buffer, "%s: %s\n", options[i]->getName().c_str(), options[i]->getValueAsString().c_str());
         ret = ret + buffer;
     }
     return ret;
@@ -390,7 +395,7 @@ string Options::getOutputOptionsAsText() {
     for (int i = 0; i < (int)options.size(); i++) {
         if (options[i]->getShowOutput()) {
             char buffer[8000];
-            sprintf(buffer, "%s: %s\n", options[i]->getName().c_str(), options[i]->getValueAsString().c_str());
+            sprintf_s(buffer, "%s: %s\n", options[i]->getName().c_str(), options[i]->getValueAsString().c_str());
             ret = ret + buffer;
         }
     }
@@ -403,7 +408,7 @@ string Options::getModifiedOptionsAsText() {
     for (int i = 0; i < (int)options.size(); i++) {
         if (options[i]->wasChanged()) {
             char buffer[8000];
-            sprintf(buffer, "%s: %s\n", options[i]->getName().c_str(), options[i]->getValueAsString().c_str());
+            sprintf_s(buffer, "%s: %s\n", options[i]->getName().c_str(), options[i]->getValueAsString().c_str());
             ret = ret + buffer;
         }
     }

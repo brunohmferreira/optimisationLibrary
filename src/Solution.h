@@ -12,6 +12,22 @@
 #include "Util.h"
 #include "Data.h"
 
+class SoltuionResponseObject {
+
+public:
+
+    SoltuionResponseObject() {}
+    ~SoltuionResponseObject() {}
+
+    bool solutionExists;
+    bool solutionIsInfeasible;
+    bool solutionsIsUnbounded;
+    bool solutionIsOptimal;
+    double gap;
+    double bestBound;
+    double obj;
+};
+
 
 class Solution {
 
@@ -36,6 +52,7 @@ class Solution {
         void setSolutionStatus(bool exists, bool optimal, bool infeasible, bool unbounded);
         void resetSolution();
         void print(int overrideDebug = -1);
+        SoltuionResponseObject report(int overrideDebug = -1);
 
         
         void setValue(double v)      { value     = v;  }

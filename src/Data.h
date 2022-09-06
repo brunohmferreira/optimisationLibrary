@@ -14,6 +14,15 @@
 /**
  * Data data
  */
+
+class DefaultObject {
+
+public:
+
+    DefaultObject() {};
+    virtual ~DefaultObject() {};
+};
+
 class Data {
 
     protected:
@@ -28,6 +37,9 @@ class Data {
         virtual void readData() {}
         virtual void print() {}
 
+        virtual void readObjectData() {}
+
+        DefaultObject* request;
 };
 
 #endif

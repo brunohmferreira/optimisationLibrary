@@ -31,6 +31,30 @@ class ClientDemand {
         }
 };
 
+class RequestObject : public DefaultObject {
+
+public:
+
+    RequestObject(int constructions, int fleet, int concreteTypes, double cost, double capacity, vector<ClientDemand> clientDemands, vector<vector<double>> distanceVector) {
+        numberOfConstructions = constructions;
+        concreteMixerTruckFleet = fleet;
+        numberOfTypesOfConcrete = concreteTypes;
+        fixedCost = cost;
+        concreteMixerTruckCapacity = capacity;
+        demands = clientDemands;
+        distances = distanceVector;
+    }
+    ~RequestObject() {}
+
+    int                     numberOfConstructions;
+    int                     concreteMixerTruckFleet;
+    int                     numberOfTypesOfConcrete;
+    double                  fixedCost;
+    double                  concreteMixerTruckCapacity;
+    vector<ClientDemand>    demands;
+    vector<vector<double>>  distances;
+};
+
 class DataConcreteMixerTruckRouting : public Data {
 
     private:
@@ -42,12 +66,17 @@ class DataConcreteMixerTruckRouting : public Data {
         vector<ClientDemand> demands;
         vector<vector<double>> distances;
 
+
     public:
 
+        DataConcreteMixerTruckRouting(RequestObject* object);
         DataConcreteMixerTruckRouting();
         virtual ~DataConcreteMixerTruckRouting();
 
+        RequestObject* request;
+
         virtual void readData();
+        virtual  void readObjectData();
         virtual void print();
 
         int          getNumberOfConstructions       (            ) const {return numberOfConstructions  ;}

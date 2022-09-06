@@ -39,8 +39,7 @@ class ModelConcreteMixerTruckRouting : public Model {
         virtual ~ModelConcreteMixerTruckRouting();
 
         virtual void execute(const Data *data);
-
-
+        virtual ModelResponseObject reportSolutionVariables(int digits = 5, int decimals = 2);
 };    
 
 #endif 

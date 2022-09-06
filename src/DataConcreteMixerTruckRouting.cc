@@ -3,7 +3,14 @@
 #include "DataConcreteMixerTruckRouting.h"
 #include "Options.h"
 
-DataConcreteMixerTruckRouting::DataConcreteMixerTruckRouting() : Data(){
+DataConcreteMixerTruckRouting::DataConcreteMixerTruckRouting(RequestObject* object) : Data(){
+    numberOfConstructions = 0;
+    concreteMixerTruckFleet = 0;
+    numberOfTypesOfConcrete = 0;
+    request = object;
+}
+
+DataConcreteMixerTruckRouting::DataConcreteMixerTruckRouting() : Data() {
     numberOfConstructions = 0;
     concreteMixerTruckFleet = 0;
     numberOfTypesOfConcrete = 0;
@@ -102,6 +109,17 @@ void DataConcreteMixerTruckRouting::readData() {
 
     // close file
     if (!Util::closeFile(&file)) Util::throwInvalidArgument("Error: Instances file %s could not be closed.", inputFilename.c_str());
+}
+
+void DataConcreteMixerTruckRouting::readObjectData() {
+
+    numberOfConstructions = request->numberOfConstructions;
+    concreteMixerTruckFleet = request->concreteMixerTruckFleet;
+    numberOfTypesOfConcrete = request->numberOfTypesOfConcrete;
+    fixedCost = request->fixedCost;
+    concreteMixerTruckCapacity = request->concreteMixerTruckCapacity;
+    demands = request->demands;
+    distances = request->distances;
 }
 
 void DataConcreteMixerTruckRouting::print() {

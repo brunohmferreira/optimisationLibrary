@@ -58,4 +58,27 @@ void Solution::print(int overrideDebug) {
  
 }
 
+SoltuionResponseObject Solution::report(int overrideDebug) {
+
+    SoltuionResponseObject* response = new SoltuionResponseObject();
+    int ddebug = overrideDebug == -1 ? debug : overrideDebug;
+    if (!debug) return *response;
+
+    response->solutionExists = solutionExists;
+    if (!solutionExists) {
+        response->solutionIsInfeasible = isInfeasible;
+        response->solutionsIsUnbounded = isUnbounded;
+    }
+    else {
+        response->solutionIsInfeasible = false;
+        response->solutionsIsUnbounded = false;
+        response->solutionIsOptimal = isOptimal;
+        response->obj = value;
+        response->gap = getGap() * 100;
+        response->bestBound = bestBound;
+    }
+
+    return *response;
+}
+
 
